@@ -1,2 +1,1 @@
-# SPOSL
-
+# SP&OS Lab Assignments 
