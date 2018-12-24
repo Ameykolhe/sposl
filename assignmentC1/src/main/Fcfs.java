@@ -72,8 +72,8 @@ public class Fcfs {
 			twt += wt[i];
 		}
 		
-		System.out.println("Average wait time : " + ttt*1.0/n);
-		System.out.println("Average turn Around time : " + twt*1.0/n);
+		System.out.println("Average wait time : " + twt*1.0/n);
+		System.out.println("Average turn Around time : " + ttt*1.0/n);
 		
 		
 		sc.close();
