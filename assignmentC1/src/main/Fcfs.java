@@ -60,7 +60,7 @@ public class Fcfs {
 		}
 		
 		//display details
-		System.out.println("pid\t ar\t bt\t wt\t tt\t ct");
+		System.out.println("\n\npid\t ar\t bt\t wt\t tt\t ct");
 		for(int i = 0; i < n; i++) { 
 			System.out.println(String.format("%d\t%d\t%d\t%d\t%d\t%d",pid[i],ar[i],bt[i],wt[i],tt[i],ct[i]));
 		}
@@ -84,6 +84,7 @@ public class Fcfs {
 
 
 /*
+Test Case : 3 3 4 2 3 1 2
 Enter no of Processes : 3
 Enter arrival time of process : 3
 Enter burst time of process : 4

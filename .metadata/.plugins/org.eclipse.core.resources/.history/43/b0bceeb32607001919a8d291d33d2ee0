@@ -1,9 +1,0 @@
-package firstComeFirstServe;
-
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Scanner;
-
-public class FCFS_A {
-
-}

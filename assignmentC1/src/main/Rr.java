@@ -19,7 +19,7 @@ public class Rr {
 		int []tt = new int[n];		//trun around Time
 		int []ct = new int[n];		//Completion time
 		
-		int timeSlice = 10;
+		int timeSlice = 4;
 		
 		//input from user
 		for(int i = 0; i < n; i++) {
@@ -59,68 +59,73 @@ public class Rr {
 		boolean fl;
 		
 		while(true) {
+			
+			fl = true;
+			
 			if(index == n && qq.size() == 0) {
 				break;
 			}
-			while(true) {
-				if(index != n) {
-					if(ar[index] == counter) {
-						
-						qq.add(new Integer(index));
-						index += 1;
+			
+			for(int i = 1; i <= timeSlice; i++) {
+			
+				System.out.println("\nCounter : " + (counter + 1));
+				
+				while(true) {
+					if(index != n) {
+						if(ar[index] == counter) {
+							System.out.println("Inserting pid : " + (index + 1));
+							qq.add(new Integer(index));
+							index += 1;
+						}
+						else {
+							break;
+						}
 					}
-					else {
+					else{
 						break;
 					}
 				}
-				else{
-					break;
-				}
-			}
-			
-			fl = false;
-			
-			for(int i=0; i < qq.size(); i++) {	//loop to update baltime / waittime of processes
-				int temp = (Integer)qq.get(i);
-				//***
-				if(i == 0) {					//process to be serviced
-					baltime[temp] -= timeSlice;
-					if(baltime[temp] == 0) {
-						ct[temp] = counter;
-					}
-					else if(baltime[temp] < 0) {
-						ct[temp] = counter - baltime[temp];
-						counter -= baltime[temp];
+				
+				
+				for(int j = 0; j < qq.size(); j++) {
+					int temp = (int)qq.get(j);
+					if(j == 0) {
+						baltime[temp] -= 1;
+						System.out.println("Process ID : " + pid[temp] + "\tBalance TIme : " + baltime[temp]);
+						if(baltime[temp] == 0) {
+							ct[temp] = counter + 1;
+							qq.remove(0);
+							System.out.println("removed : " + pid[temp]);
+							fl  = false;
+						}
 					}
 					else {
-						System.out.println("pid : " + pid[temp] + "\tbalanceTime : " + baltime[temp]);
-						fl = true;
+						System.out.println("Process ID : " + pid[temp] + "\tBalance TIme : " + baltime[temp]);
 					}
-				}
-				else {
-					wt[temp] += timeSlice;				
+				
 				}
 				
+				counter += 1;
+				/*
+				if(!fl) {
+					break;
+				}
+				*/
 			}
 			
-			if(fl) {
-				qq.add(new Integer((Integer)qq.get(0)));
+			
+			if(!qq.isEmpty()) {
+				qq.add(new Integer((int)qq.get(0)));
+				qq.remove(0);
 			}
 			
-			qq.remove(0);
-			counter += timeSlice;
-			System.out.println("Counter : " + counter);
-			//***
+			System.out.println("End Of TimeSlice\n");
 		}
 		
 		
 		for(int i = 0; i < n; i++) {
 			tt[i] = ct[i] - ar[i];
-			/*
-			if(wt[i] != 0) {
-				wt[i] += timeSlice;
-			}
-			*/
+			wt[i] = tt[i] - bt[i];
 		}
 		
 		
@@ -145,3 +150,7 @@ public class Rr {
 	}
 
 }
+
+
+//Test Case :  6 0 5 1 6 2 3 3 1 4 5 6 4
+
