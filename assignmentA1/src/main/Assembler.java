@@ -32,11 +32,11 @@ public class Assembler {
 		BufferedReader br = new BufferedReader(new FileReader("sample.asm")); 
 	    String line;
 	    
-	    Pattern pattern = Pattern.compile("^([a-zA-Z0-9]*)([\\s]+)([a-zA-Z]+)([\\s]*)(.*)$");									//Group1 : Label	Group3 : Instruction	Group5 : operand
+	    Pattern pattern = Pattern.compile("^([a-zA-Z0-9]*)([\\s]+)([a-zA-Z]+)([\\s]*)(.*)$");									//Group1 : Label			Group3 : Instruction	Group5 : operand
 /**/	Pattern regLabelPattern = Pattern.compile("^(AREG|BREG|CREG|DREG)([\\s]*),([\\s]*)([a-zA-Z0-9]+)$");					//Group1 : op1(Register)	Group4 : op2(Label)
 		Pattern regLiteralPattern = Pattern.compile("^(AREG|BREG|CREG|DREG)([\\s]*),([\\s]*)='([0-9]+)'$");						//Group1 : op1(Register)	Group4 : op2(Literal)
-		Pattern bcPattern = Pattern.compile("^(LT|LTE|EQ|GT|GTE|ANY)([\\s]*),([\\s]*)([a-zA-Z0-9]+)$");							//Group1 : condition	Group4 : Label
-	    Pattern labelOffsetPattern = Pattern.compile("^([a-zA-Z0-9]+)([\\s]*)([+|-])([\\s]*)([0-9]+)$");						//Group1 : Label	Group4 : Offset(int)
+		Pattern bcPattern = Pattern.compile("^(LT|LTE|EQ|GT|GTE|ANY)([\\s]*),([\\s]*)([a-zA-Z0-9]+)$");							//Group1 : condition		Group4 : Label
+	    Pattern labelOffsetPattern = Pattern.compile("^([a-zA-Z0-9]+)([\\s]*)([+|-])([\\s]*)([0-9]+)$");						//Group1 : Label			Group4 : Offset(int)
 	    Pattern numOperandPattern = Pattern.compile("^([0-9]+)$");																//Group1 : Number(int)
 	    Pattern constantPattern = Pattern.compile("^'([0-9]+)'$");																//Group1 : constant(int)
 	    Pattern literralPattern = Pattern.compile("^='([0-9]+)'$");																//Group1 : Literal(int)
