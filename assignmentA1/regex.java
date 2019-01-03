@@ -1,3 +1,5 @@
+
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,11 +16,11 @@ class regex{
             System.out.println("No Match Found");
         }
         */
-        String mydata = " MOVER AREG,cd";
+        String mydata = "	MOVER	AREG, ='10'";
         Pattern pattern = Pattern.compile("^([a-zA-Z0-9]*)([\\s]+)([a-zA-Z]+)([\\s]*)(.*)$");
         Matcher matcher = pattern.matcher(mydata);
         //Pattern movePattern = Pattern.compile("^([A|a|B|b|C|c|D|d][R|r][E|e][G|g])([\\s]*),([\\s]*)([a-zA-Z0-9]*)$");
-        Pattern movePattern = Pattern.compile("^(AREG|BREG|CREG|DREG)([\\s]*),([\\s]*)([a-zA-Z0-9]+)$");
+        Pattern movePattern = Pattern.compile("^(AREG|BREG|CREG|DREG)([\\s]*),([\\s]*)='([0-9]+)'$");
         Matcher operandMatcher;
         if (matcher.find()) {
 
