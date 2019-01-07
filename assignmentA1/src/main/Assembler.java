@@ -1,25 +1,51 @@
 package main;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Assembler {
 	
-	Hashtable<String,ArrayList<Integer>> symTab;
+	HashMap<String, String> optab;
+	LinkedHashMap<String,ArrayList<Integer>> symTab;
 	LinkedHashMap<Integer,Integer> litTab;
 	ArrayList<Integer> poolTab;
 	
 	int lc;
 	
 	Assembler(){
-		symTab = new Hashtable<String,ArrayList<Integer>>();
+		
+		optab =  new HashMap<String,String>();
+		
+		optab.put("STOP", "IS,00");
+		optab.put("ADD", "IS,01");
+		optab.put("SUB", "IS,02");
+		optab.put("MULT", "IS,03");
+		optab.put("MOVER", "IS,04");
+		optab.put("MOVEM", "IS,05");
+		optab.put("COMP", "IS,06");
+		optab.put("BC", "IS,07");
+		optab.put("DIV", "IS,08");
+		optab.put("READ", "IS,09");
+		optab.put("PRINT", "IS,10");
+		optab.put("DC", "DL,01");
+		optab.put("DS", "DL,02");
+		optab.put("START", "AD,01");
+		optab.put("END", "AD,02");
+		optab.put("ORIGIN", "AD,03");
+		optab.put("EQU", "AD,04");
+		optab.put("LTORG", "DL,05");
+		
+		
+		symTab = new LinkedHashMap<String,ArrayList<Integer>>();
 		litTab = new LinkedHashMap<Integer,Integer>();
 		poolTab = new ArrayList<Integer>();
 		
@@ -28,8 +54,27 @@ public class Assembler {
 	}
 	
 	
+	void insertToSymtab(String symbol, Integer address, Integer length){
+			if(symTab.containsKey(symbol)){
+				//System.out.println("Symbol : " + symbol + " already defined");
+				if(length!=1){
+					ArrayList<Integer> ar = (ArrayList<Integer>)symTab.get(symbol);
+					ar.remove(1);
+					ar.add(length);
+				}
+			}
+			else{
+				ArrayList<Integer> ar = new ArrayList<Integer>();
+				ar.add(address);
+				ar.add(length);
+			}
+	}
+	
+	
+	@SuppressWarnings("unused")
 	void pass1() throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader("sample.asm")); 
+		BufferedWriter bw = new BufferedWriter(new FileWriter("Sample.intermediate"));
 	    String line;
 	    
 	    Pattern pattern = Pattern.compile("^([a-zA-Z0-9]*)([\\s]+)([a-zA-Z]+)([\\s]*)(.*)$");									//Group1 : Label			Group3 : Instruction	Group5 : operand
@@ -53,6 +98,8 @@ public class Assembler {
 	    String operand1,operand2;
 	    
 	    String operator;
+	    
+	    String intermediateLine = "";
     	
 	    while ((line = br.readLine()) != null) {
 	    	
@@ -60,17 +107,29 @@ public class Assembler {
             if (matcher.find()) {
             	
             	System.out.println("Line no     : " + lineNO);
+            	
             	label = matcher.group(1);
             	instruction = matcher.group(3);
             	operand = matcher.group(5);
+            	
             	if(!label.equalsIgnoreCase("")) {
             		System.out.println("Symbol      : " + label);
+            		insertToSymtab(label , new Integer(lc), new Integer(1));
             	}
             	
             	System.out.println("Instruction : " + instruction);
             	
+            	//START
+            	if(instruction.equalsIgnoreCase("start")){
+            		operandMatcher = numOperandPattern.matcher(operand);
+            		if(operandMatcher.find()) {
+            			operand1 = operandMatcher.group(1);
+            			System.out.println("operand1    : " + operand1);
+            			lc = Integer.parseInt(operand1);
+            		}
+            	}
             	// MOVEM MOVER ADD SUB MULT DIV
-            	if(instruction.equalsIgnoreCase("movem")||instruction.equalsIgnoreCase("mover")||instruction.equalsIgnoreCase("add")||instruction.equalsIgnoreCase("sub")||instruction.equalsIgnoreCase("mult")||instruction.equalsIgnoreCase("div")) {
+            	else if(instruction.equalsIgnoreCase("movem")||instruction.equalsIgnoreCase("mover")||instruction.equalsIgnoreCase("add")||instruction.equalsIgnoreCase("sub")||instruction.equalsIgnoreCase("mult")||instruction.equalsIgnoreCase("div")) {
             		
             		operandMatcher = regLabelPattern.matcher(operand);
             		operandMatcher1 = regLiteralPattern.matcher(operand);   
@@ -94,7 +153,7 @@ public class Assembler {
             		}
             	}
             	// CONDITION
-            	else if(instruction.equalsIgnoreCase("bc")) {
+            	else if(instruction.equalsIgnoreCase("literralPatternbc")) {
             		operandMatcher = bcPattern.matcher(line);
             		// CONDITION LABEL
             		if(operandMatcher.find()) {
