@@ -3,9 +3,11 @@ package main;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -95,6 +97,12 @@ public class Assembler {
 		for(int i=0; i<litTab.size(); i++) {
 			System.out.println(litTab.get(i) + "\t" + litAdd.get(i));
 		}
+		
+		//Display litTab
+		System.out.println("\n\npoolTab");
+		for(int i=0; i<poolTab.size(); i++) {
+			System.out.println(poolTab.get(i));
+		}
 	}
 
 	
@@ -121,10 +129,24 @@ public class Assembler {
 	}
 	
 	
+	void processLiteral(BufferedWriter bw) throws IOException {
+		int start = (Integer)poolTab.get(poolTab.size()-1);
+		while(start < litTab.size()) {
+			litAdd.set(start,new Integer(lc));
+			String line = String.format("='%s'",litTab.get(start).toString());
+			bw.write(line);
+    		bw.newLine();
+			lc+=1;
+			start+=1;
+		}
+		poolTab.add(new Integer(start));
+	}
+	
+	
 	@SuppressWarnings({ "unused", "rawtypes" })
 	void pass1() throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader("sample.asm")); 
-		BufferedWriter bw = new BufferedWriter(new FileWriter("Sample.intermediate"));
+		BufferedWriter bw = new BufferedWriter(new FileWriter("intermediate.t"));
 	    String line;
 	    
 	    Pattern pattern = Pattern.compile("^([a-zA-Z0-9]*)([\\s]+)([a-zA-Z]+)([\\s]*)(.*)$");									//Group1 : Label			Group3 : Instruction	Group5 : operand
@@ -182,10 +204,10 @@ public class Assembler {
             			intermediateLine += String.format(" (c,%s)",operand1);
             		}
             	}
-            	// MOVEM MOVER ADD SUB MULT DIV
             	else if(instruction.equalsIgnoreCase("stop")) {
             		lc+=1;
             	}
+            	// MOVEM MOVER ADD SUB MULT DIV
             	else if(instruction.equalsIgnoreCase("movem")||instruction.equalsIgnoreCase("mover")||instruction.equalsIgnoreCase("add")||instruction.equalsIgnoreCase("sub")||instruction.equalsIgnoreCase("mult")||instruction.equalsIgnoreCase("div")) {
             		
             		operandMatcher = regLabelPattern.matcher(operand);
@@ -208,7 +230,7 @@ public class Assembler {
             			System.out.println("operand2    : " + operand2);
             			
             			insertToLitTab(operand2);
-            			intermediateLine += String.format(" %s,%s" , operand1,operand2);
+            			intermediateLine += String.format(" %s,(l,%s)" , operand1,operand2);
             			lc+=1;
             		}
             		
@@ -225,7 +247,7 @@ public class Assembler {
             			operand2 = operandMatcher.group(4);
             			System.out.println("operand1    : " + operand1);
             			System.out.println("operand2    : " + operand2);
-            			
+            			intermediateLine += String.format(" %s,%s" , operand1,operand2);
             			lc+=1;
             		}
             		else {
@@ -310,7 +332,7 @@ public class Assembler {
         		// DC
         		else if(instruction.equalsIgnoreCase("dc")) {
         			operandMatcher = constantPattern.matcher(operand);
-        			//
+        			//constant Pattern
         			if(operandMatcher.find()) {
             			operand1 = operandMatcher.group(1);
             			System.out.println("operand1    : " + operand1);
@@ -341,6 +363,9 @@ public class Assembler {
                 	intermediateLine += String.format(" %s",operand);
                 	lc += 1;
                 }
+                else if(instruction.equalsIgnoreCase("ltorg")) {
+                	processLiteral(bw);
+                }
             }
             else {
             	System.out.println("Invalid Syntax line no : " + lineNO);
@@ -353,6 +378,37 @@ public class Assembler {
     		System.out.println("\n" + intermediateLine + "\n");
     		
 	    }
+	    
+	    processLiteral(bw);
+	    
+	    FileOutputStream fos = new FileOutputStream("symTab.t");
+	    ObjectOutputStream oos = new ObjectOutputStream(fos);
+	    oos.writeObject(symTab);
+	    
+	    fos.close();
+	    oos.close();
+	    
+	    fos = new FileOutputStream("opTab.t");
+	    oos = new ObjectOutputStream(fos);
+	    oos.writeObject(optab);
+	    
+	    fos.close();
+	    oos.close();
+	    
+	    fos = new FileOutputStream("litTab.t");
+	    oos = new ObjectOutputStream(fos);
+	    oos.writeObject(litTab);
+
+	    fos.close();
+	    oos.close();
+	    
+	    fos = new FileOutputStream("litAdd.t");
+	    oos = new ObjectOutputStream(fos);
+	    oos.writeObject(litAdd);
+
+	    fos.close();
+	    oos.close();
+	    
 	    
 	    br.close();
 	    bw.close();

@@ -3,6 +3,7 @@ A	DS	3
 L1	MOVER	AREG, ='5'
 	ADD	AREG, C
 	LTORG
+	='5'
 	MOVEM	AREG, ='1'
 D	EQU	A+1
 L2	PRINT	D
@@ -12,3 +13,4 @@ C	DC	'5'
 	STOP
 B	DC	'19'
 	END
+	='5'
