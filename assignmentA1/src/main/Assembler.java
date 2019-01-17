@@ -129,7 +129,7 @@ public class Assembler {
 	}
 	
 	
-	void processLiteral(BufferedWriter bw) throws IOException {
+	void processLiteral(BufferedWriter bw , boolean fl) throws IOException {
 		int start = (Integer)poolTab.get(poolTab.size()-1);
 		while(start < litTab.size()) {
 			litAdd.set(start,new Integer(lc));
@@ -139,7 +139,10 @@ public class Assembler {
 			lc+=1;
 			start+=1;
 		}
-		poolTab.add(new Integer(start));
+		if(fl){
+			poolTab.add(new Integer(start));
+	
+		}
 	}
 	
 	
@@ -165,7 +168,7 @@ public class Assembler {
 	    int lineNO = 1;
 	    
 	    String label;
-	    String instruction;
+	    String instruction = null;
 	    String operand;
 	    
 	    String operand1,operand2;
@@ -176,6 +179,8 @@ public class Assembler {
     	
 	    while ((line = br.readLine()) != null) {
 	    	
+	    	intermediateLine = new Integer(lineNO).toString() + " " + new Integer(lc).toString() + " ";
+	    	
             matcher = pattern.matcher(line);
             if (matcher.find()) {
             	
@@ -185,7 +190,7 @@ public class Assembler {
             	instruction = matcher.group(3);
             	operand = matcher.group(5);
             	
-            	intermediateLine = String.format("(%s)",optab.get(instruction.toUpperCase()));
+            	intermediateLine += String.format("(%s)",optab.get(instruction.toUpperCase()));
             	
             	if(!label.equalsIgnoreCase("") && !instruction.equalsIgnoreCase("equ") && !instruction.equalsIgnoreCase("ds")) {
             		System.out.println("Symbol      : " + label);
@@ -219,7 +224,7 @@ public class Assembler {
             			System.out.println("operand1    : " + operand1);
             			System.out.println("operand2    : " + operand2);
             			
-            			intermediateLine += String.format(" %s,%s",operand1,operand2);
+            			intermediateLine += String.format(" %s.%s",operand1,operand2);
             			lc+=1;
             		}
             		// REG LITERAL
@@ -230,7 +235,7 @@ public class Assembler {
             			System.out.println("operand2    : " + operand2);
             			
             			insertToLitTab(operand2);
-            			intermediateLine += String.format(" %s,(l,%s)" , operand1,operand2);
+            			intermediateLine += String.format(" %s.(l,%s)" , operand1,operand2);
             			lc+=1;
             		}
             		
@@ -247,7 +252,7 @@ public class Assembler {
             			operand2 = operandMatcher.group(4);
             			System.out.println("operand1    : " + operand1);
             			System.out.println("operand2    : " + operand2);
-            			intermediateLine += String.format(" %s,%s" , operand1,operand2);
+            			intermediateLine += String.format(" %s.%s" , operand1,operand2);
             			lc+=1;
             		}
             		else {
@@ -363,8 +368,11 @@ public class Assembler {
                 	intermediateLine += String.format(" %s",operand);
                 	lc += 1;
                 }
+            	//LTORG
                 else if(instruction.equalsIgnoreCase("ltorg")) {
-                	processLiteral(bw);
+                	bw.write(intermediateLine);
+            		bw.newLine();	
+                	processLiteral(bw,true);
                 }
             }
             else {
@@ -373,24 +381,19 @@ public class Assembler {
             }           	
             
     		lineNO++;
-    		bw.write(intermediateLine);
-    		bw.newLine();
+    		if(!instruction.equalsIgnoreCase("ltorg")){
+    			bw.write(intermediateLine);
+        		bw.newLine();	
+    		}
     		System.out.println("\n" + intermediateLine + "\n");
     		
 	    }
 	    
-	    processLiteral(bw);
+	    processLiteral(bw,false);
 	    
 	    FileOutputStream fos = new FileOutputStream("symTab.t");
 	    ObjectOutputStream oos = new ObjectOutputStream(fos);
 	    oos.writeObject(symTab);
-	    
-	    fos.close();
-	    oos.close();
-	    
-	    fos = new FileOutputStream("opTab.t");
-	    oos = new ObjectOutputStream(fos);
-	    oos.writeObject(optab);
 	    
 	    fos.close();
 	    oos.close();
