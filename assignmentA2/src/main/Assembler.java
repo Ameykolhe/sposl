@@ -18,6 +18,7 @@ public class Assembler {
 	
 	HashMap<String, String> opTab;
 	HashMap<String, String> conditionCode;
+	HashMap<String, String> regCode;
 	LinkedHashMap<String,ArrayList> symTab;
 	ArrayList<String> litTab;
 	ArrayList<Integer> litAdd;
@@ -33,6 +34,12 @@ public class Assembler {
 		conditionCode.put("GT","4");
 		conditionCode.put("GTE","5");
 		conditionCode.put("ANY","6");
+		
+		regCode = new HashMap<String,String>();
+		regCode.put("AREG","1");
+		regCode.put("BREG","2");
+		regCode.put("CREG","3");
+		regCode.put("DREG","4");
 		
 		FileInputStream fos = new FileInputStream("../assignmentA1/symTab.t");
 	    ObjectInputStream oos = new ObjectInputStream(fos);
@@ -94,12 +101,17 @@ public class Assembler {
 		
 	}
 	
+	@SuppressWarnings("rawtypes")
 	void pass2() throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader("../assignmentA1/intermediate.t")); 
 		BufferedWriter bw = new BufferedWriter(new FileWriter("target.txt"));
 	    String line;
 	    
 	    String target = "";
+	    
+	    String lc = null;
+	    
+	    int litIndex = 0;
 	    
 	    while ((line = br.readLine()) != null) {
 	    	String words[] = line.split("[\\s]+");
@@ -108,62 +120,76 @@ public class Assembler {
 	    	
 	    	if(!line.contains("=")) {
 	    		String lineNO = words[0];
-		    	String lc = words[1];
+		    	lc = words[1];
 		    	
-		    	target = lc + ")\t"; 
+		    	target = lc + "\t)\t"; 
 		    	
-		    	words[2] = words[2].replace("(","");
-    			words[2] = words[2].replace(")","");
     			String[] instruction = null;
-    			if(words[2].contains(",")){
-    	    		instruction = words[2].split(",");
-	    			target += instruction[1] + " ";
-	    			//System.out.print(instruction[j] + "\t*\t");
-	    			if(!instruction[0].equalsIgnoreCase("AD")) {
-	    				System.out.println(target);
-    	    		}
-    	    	}
     			String[] operands = null;
-    			if(words.length >= 4){
-    				if(words[3].contains(".")){
-	    	    		operands = words[3].split("\\.");
-	    	    		for(int j= 0 ; j< operands.length ;j++){
-	    	    			//System.out.print(operands[j] + "\t*\t");
-	    	    		}
-	    	    	}
-    			}
+    			if(words[2].contains(",")){
+    				words[2] = words[2].replace("(","");
+        			words[2] = words[2].replace(")","");
+    				instruction = words[2].split(",");
+	    			target += instruction[1] + " ";
+
+	    			if(instruction[0].equalsIgnoreCase("AD")) {
+	    				target = "";
+    	    		}
+	    			else if(instruction[0].equalsIgnoreCase("DL") && ( instruction[1].equals("02")  || instruction[1].equals("05") ) ) {
+	    				target = "";
+	    			}
+	    			else if(instruction[0].equalsIgnoreCase("DL") && instruction[1].equals("01")) {
+	    				words[3] = words[3].replace("(","");
+	    				words[3] = words[3].replace(")","");
+	    				operands = words[3].split(",");
+	    				target = String.format("%s\t)\t00 0 00%s",lc,operands[1]);
+	    			}
+	    			else {
+	        			if(words.length >= 4) {
+	        				if(words[3].contains(".")) {
+	    	    	    		operands = words[3].split("\\.");
+	    	    	    		
+	    	    	    		target += String.format("%s " , regCode.get(operands[0]));
+	    	    	    		if(operands[1].contains(",")) {
+	    	    	    			String temp =operands[1].replace("(","");
+	    	    	    			temp = temp.replace(")","");
+	    	    	    			String[] temp1 = temp.split(",");
+	    	    	    			target += String.format("%d",litAdd.get(litIndex));
+	    	    	    			litIndex += 1;
+	    	    	    		}
+	    	    	    		else {
+	    	    	    			ArrayList ar = (ArrayList)symTab.get(operands[1]);
+	    	    	    			int address = (Integer)ar.get(0);
+	    	    	    			target += String.format("%d",address);
+	    	    	    		}
+	    	    	    		
+	        				}
+	        				else if( (!words[3].contains(",")) && (!words[3].contains("+")) && (!words[3].contains("-")) ) {
+	        					ArrayList ar = (ArrayList)symTab.get(words[3]);
+    	    	    			int address = (Integer)ar.get(0);
+    	    	    			target += String.format("0 %d",address);
+	        				}
+	        				
+	        			}
+	        			else {
+	        				target += "0 000";
+	        			}
+	    			
+	    			}
     			 			
-	    	}
-	    	
-	    	
-	    	/*
-	    	for(int i=0 ; i < words.length;i++){
-	    		if(i==2){
-	    			//System.out.println(words[2]);
-	    			words[2] = words[2].replace("(","");
-	    			words[2] = words[2].replace(")","");
-	    			if(words[2].contains(",")){
-	    	    		String[] instruction = words[2].split(",");
-	    	    		for(int j= 0 ; j< instruction.length ;j++){
-	    	    			System.out.print(instruction[j] + "\t*\t");
-	    	    		}
-	    	    	}
-	    		}
-	    		else if(i==3){
-    				if(words[3].contains(".")){
-	    	    		String[] operands = words[3].split("\\.");
-	    	    		for(int j= 0 ; j< operands.length ;j++){
-	    	    			System.out.print(operands[j] + "\t*\t");
-	    	    		}
-	    	    	}	
     			}
-	    		else {
-	    			System.out.print(words[i] + "\t*\t");
-	    		}
 	    	}
-	    	System.out.println();
-	    	*/
-	 
+	    	else if(words[2].contains("=")) {
+				String temp = words[2].replace("'","");
+				temp = temp.replace("=","");
+				target = String.format("%s\t)\t00 0 00%s",lc,temp);
+			}
+	    	
+	    	
+	    	System.out.println(target);
+	    	
+	    	bw.write(target);
+    		bw.newLine();	
 	    
 	    }
 	    

@@ -26,6 +26,7 @@ public class Assembler {
 	ArrayList<Integer> poolTab;
 	
 	int lc;
+	int lineNO;
 	
 	@SuppressWarnings("rawtypes")
 	Assembler(){
@@ -59,6 +60,7 @@ public class Assembler {
 		poolTab.add(new Integer(0));
 		
 		lc = 0;
+		lineNO = 1;
 		
 	}
 	
@@ -133,7 +135,7 @@ public class Assembler {
 		int start = (Integer)poolTab.get(poolTab.size()-1);
 		while(start < litTab.size()) {
 			litAdd.set(start,new Integer(lc));
-			String line = String.format("='%s'",litTab.get(start).toString());
+			String line = new Integer(lineNO).toString() + " " + new Integer(lc).toString() + " " + String.format("='%s'",litTab.get(start).toString());
 			bw.write(line);
     		bw.newLine();
 			lc+=1;
@@ -164,8 +166,7 @@ public class Assembler {
 	    
 	    Matcher matcher;
 	    Matcher operandMatcher,operandMatcher1;
-	    
-	    int lineNO = 1;
+	   
 	    
 	    String label;
 	    String instruction = null;

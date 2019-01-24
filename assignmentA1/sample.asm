@@ -10,5 +10,5 @@ L2	PRINT	D
 C	DC	'5'
 	ORIGIN	L2+1
 	STOP
-B	DC	'19'
+B	DC	'1'
 	END
