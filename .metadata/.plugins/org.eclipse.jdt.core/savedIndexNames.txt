@@ -1,3 +1,1 @@
-INDEX VERSION 1.126+/home/TE/3144/sposl/.metadata/.plugins/org.eclipse.jdt.core
-2556420350.index
-104559965.index
+INDEX VERSION 1.131+D:\TE-Comp-SEM2\sposl\.metadata\.plugins\org.eclipse.jdt.core
