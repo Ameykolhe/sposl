@@ -6,6 +6,7 @@
 	&z	&y
 	LOAD	&y
 	STORE	&x
+	M2	&x,&y
 	MEND
 	MACRO	M2	&t,&u
 	LOAD	p
@@ -15,5 +16,4 @@
 	STORE	&u
 	MEND
 	M1	a,b,ADD
-	M2	x,y
 	END

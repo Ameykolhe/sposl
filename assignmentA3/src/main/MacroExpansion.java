@@ -44,32 +44,27 @@ public class MacroExpansion {
 		String[] words = null;
 		int defLevel = 0;
 		String[] macroParameter = null;
+		
 		while( (line = br.readLine()) != null) {
 			words = line.split("\t");
-			//System.out.println(words[1] + "\t");
 			if(words[1].equals("MACRO")){
-				
-				defLevel += 1;
 				macroParameter = words[3].split(",");
 				mnt.put(new String(words[2]),new Pair<Integer,Integer>(mdt.size(),macroParameter.length));
 				HashMap<String,String> fvsa = new HashMap<String,String>();
-				System.out.println("\nFormal vs Positional Parameter : " + words[2]);
+				System.out.println("\nFormal vs Positional Parameter for : " + line);
 				for(int i=1; i<=macroParameter.length; i++) {
 					fvsa.put(macroParameter[i-1],String.format("#%d",i));
 					System.out.println(macroParameter[i-1] + "\t#" + i);
 				}
 				do {
 					line = br.readLine();
-					//System.out.println(line);
 					words = line.split("\t");
 					for (Map.Entry<String,String> entry : fvsa.entrySet()) { 
-			            //System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 			            line = line.replaceAll(entry.getKey(),entry.getValue());
 					} 
 					mdt.add(line);
 				}while(!words[1].equals("MEND"));
 				
-				defLevel -= 1;
 			}
 			else {
 				bw.write(line);
