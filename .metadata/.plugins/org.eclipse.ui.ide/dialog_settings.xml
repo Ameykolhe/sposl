@@ -18,7 +18,11 @@
 		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
 		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="/home/TE/3144/sposl/assignmentC1"/>
 			<item value="/home/TE/3144/sposl/assignmentA1"/>
+			<item value="/home/TE/3144/sposl/assignmentA2"/>
+			<item value="/home/TE/3144/sposl/assignmentA3"/>
+			<item value="/home/TE/3144/sposl/assignmentA4"/>
 		</list>
 		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
 			<item value=""/>
