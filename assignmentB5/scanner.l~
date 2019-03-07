@@ -1,12 +1,15 @@
 %{
 	#include <stdio.h>
-	#include "y.tab.h"
+	#include "scanner.tab.h"
 %}
 digit	[0-9]
 int	{digit}+
 float	{digit}+(.{digit}+)?((E|e){digit}+)?
 char	'.'
 string 	".*"
+
+dataType	int|float|char|String|double
+
 %%
 =	{return ASSIGN;}
 int	{return INTDECL;}

@@ -1,3 +1,3 @@
-bison -d scanner.y
-flex scanner.l
-gcc scanner.tab.c lex.yy.c -o scanner
+bison -d grammar.y
+lex lexer.l
+gcc grammar.tab.c lex.yy.c
