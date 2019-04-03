@@ -1,9 +1,5 @@
 package main;
 
-	
-/* Reference: https://www.geeksforgeeks.org/operating-system-bankers-algorithm/
- *
- */
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -22,6 +18,7 @@ public class BankersAlgorithm {
 		}
 		
 		// Print max
+		System.out.println("\n\nMax Table");
 		for(int i = 0;i < max.length;i ++){
 			for(int j = 0; j < max[0].length; j++){
 				System.out.print(max[i][j] + " ");
@@ -30,6 +27,7 @@ public class BankersAlgorithm {
 		}
 		
 		//Print allocated
+		System.out.println("\n\nallocated Table");
 		for(int i = 0;i < allocated.length;i ++){
 			for(int j = 0; j < allocated[0].length; j++){
 				System.out.print(allocated[i][j] + " ");
@@ -38,6 +36,7 @@ public class BankersAlgorithm {
 		}
 		
 		// Print need
+		System.out.println("\n\nNeed Table");
 		for(int i = 0;i < need.length;i ++){
 			for(int j = 0; j < need[0].length; j++){
 				System.out.print(need[i][j] + " ");
@@ -170,6 +169,7 @@ public class BankersAlgorithm {
 	public static void main(String args[]) throws Exception{
 		BankersAlgorithm a = new BankersAlgorithm(5,3);
 		a.fillMatrices();
+		a.printTables();
 		boolean status = a.safetyAlgorithm();
 		if(status){
 			System.out.println("Safe");
